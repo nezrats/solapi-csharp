@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualBasic;
+// using Microsoft.VisualBasic; /* GetSignature 함수 내 Strings.Replace 와 Request 함수의 Constants.vbNullString 에서 사용되기 위한 참조이나 C#자체 기능만으로 대체 가능; 불필요 참조 배제*/
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -78,7 +78,8 @@ static class MessagingLib
     {
         System.Security.Cryptography.HMACSHA256 sha256 = new System.Security.Cryptography.HMACSHA256(System.Text.Encoding.UTF8.GetBytes(apiSecret));
         byte[] hashValue = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(data));
-        string hash = Strings.Replace(BitConverter.ToString(hashValue), "-", "");
+        //string hash = Strings.Replace(BitConverter.ToString(hashValue), "-", "");//Microsoft.VisualBasic 참조 필요
+        string hash = BitConverter.ToString(hashValue).Replace("-", "");//대체 코드
         return hash.ToLower();
     }
 
@@ -114,7 +115,8 @@ static class MessagingLib
         return url;
     }
 
-    public static Response Request(string path, string method, string data = Constants.vbNullString)
+    //public static Response Request(string path, string method, string data = Constants.vbNullString) // Microsoft.VisualBasic 참조 필요
+    public static Response Request(string path, string method, string data = null) //대체 코드
     {
         string auth = GetAuth(Config.apiKey, Config.apiSecret);
 
@@ -123,6 +125,7 @@ static class MessagingLib
             System.Net.WebRequest req = System.Net.WebRequest.Create(GetUrl(path));
             req.Method = method;
             req.Headers.Add("Authorization", auth);
+            // req.ContentType = "application/json; charset=utf-8";  /* .NetFrameWork 호환성으로 인한 오류 발생 시 이 구문 사용. 아래 구문은 주석처리 */ 
             req.Headers.Add("Content-type", "application/json; charset=utf-8");
 
             if (!string.IsNullOrEmpty(data))
